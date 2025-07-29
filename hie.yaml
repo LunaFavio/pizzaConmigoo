@@ -1,0 +1,7 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "pizzaConmigoo:lib"
+
+    - path: "./test"
+      component: "pizzaConmigoo:test:pizzaConmigoo-test"
