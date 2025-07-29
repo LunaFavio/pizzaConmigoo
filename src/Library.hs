@@ -112,3 +112,53 @@ anchoasBasica = Pizza ["salsa", "anchoas"] 8 270
 --pizzeriaPescadito pedidos = pizzeriaEspecial anchoasBasica pedidos
 pizzeriaPescadito = pizzeriaEspecial anchoasBasica 
 
+--d) pizzeriaGourmet: Del pedido solo envía aquellas para las cuales el nivel de satisfacción 
+--   supera el nivel de exquisitez de la pizzería... el resto no, las considera deplorables. 
+--   Y, de regalo, a aquellas que manda las agranda a la siguiente escala, si esto es posible.
+--   La pizzeriaLaJauja, es un clásico caso gourmet con un parámetro de exquisitez de 399.
+
+type PizzeriaGourmet = Number -> Pizzeria
+pizzeriaGourmet exquisitez pedidos = map agrandar $ filter (\p-> nivelSatisfaccion p > exquisitez) pedidos
+
+pizzeriaGourmet2 exquisitez  = map agrandar . filter ((>exquisitez).nivelSatisfaccion) 
+
+pizzeriaLaJauja :: Pizzeria
+pizzeriaLaJauja = pizzeriaGourmet 399 
+
+--7) 
+--a implementar la función sonDignasDeCalleCorrientes que, dado un pedido y una lista de pizzerías,
+--  devuelve aquellas pizzerías que mejoran la satisfacción del pedido.
+
+sonDignasDeCalleCorrientes pedido pizzerias = filter (esDignaCalleCorrientes pedido) pizzerias
+
+
+esDignaCalleCorrientes :: Pedido -> Pizzeria -> Bool
+esDignaCalleCorrientes  pedido pizzeria= satisfaccionPedido pedido < (satisfaccionPedido . pizzeria) pedido
+
+--b) Dado un pedido y una lista de pizzerías encontrar la pizzería que maximiza la satisfacción que otorga el pedido.
+
+
+maximaSatisfaccion pedido pizzerias = maximum . map nivelSatisfaccion $ map (pedido) pizzerias
+maximaSatisfaccion2 pedido pizzerias = maximum . map (nivelSatisfaccion . pedido) $ pizzerias
+
+maximaSatisfaccion3 pedido pizzerias = foldl1 (mejorPizzeria pedido) pizzerias
+
+mejorPizzeria pedido pizzeria1 pizzeria2 
+    | valor pizzeria1 > valor pizzeria2 = pizzeria1
+    | otherwise = pizzeria2
+    where valor pizzeria = nivelSatisfaccion . pizzeria $ pedido
+
+--8) Explicar el tipo de la siguiente función:
+--   yoPidoCualquierPizza x y z = any (odd . x . fst) z && all (y . snd) z
+--   Se trata de una funcion Booleana, donde si cumple con ambos criterios la resolucion sera True
+--   Por el lado derecho evalua que todos los segundos elemntos de z evaluados en y sean True
+--   Por el lado izquierodo evalua si algun primer elemento de z, evaluado en x es impar
+
+--9) Bonus:
+--   Todos tenemos preferencias, y algunas veces nuestra preferencia es que se junten los mejores pizzeros 
+--   y hagan lo que mejor saben. Implementar laPizzeriaPredilecta, que dada una lista de pizzerias, 
+--   devuelve una pizzería teóricamente perfecta que haga los pedidos de todas juntas.
+
+laPizzeriaPredilecta :: [Pizzeria] -> Pizzeria
+laPizzeriaPredilecta pizzerias = foldl1 (.) pizzerias
+
